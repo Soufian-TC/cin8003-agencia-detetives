@@ -64,6 +64,8 @@ A organização do projeto segue uma estrutura modular, separando a documentaç�
 ├── docs/
 │   ├── 01_requisitos.md
 │   ├── 02_modelo_conceitual.md
+│   ├── mer_chen.png
+│   ├── mer_chen.svg
 │   └── 03_esquema_relacional.md
 │
 └── sql/
@@ -98,8 +100,8 @@ A documentação foi dividida em três arquivos principais, correspondentes às 
 | Arquivo | Conteúdo |
 |---|---|
 | `01_requisitos.md` | Levantamento e análise dos requisitos do sistema |
-| `02_modelo_conceitual.md` | Modelo Entidade-Relacionamento (MER), utilizando a notação de Chen |
-| `03_esquema_relacional.md` | Esquema relacional, normalização e dicionário de dados |
+| `02_modelo_conceitual.md` | Modelo Entidade-Relacionamento (MER): entidades, relacionamentos, cardinalidades e diagrama em notação de Chen (`mer_chen.png` / `mer_chen.svg`) |
+| `03_esquema_relacional.md` | Esquema relacional, ações referenciais, dicionário de dados, normalização e mapeamento das regras de negócio |
 
 Essa divisão permite acompanhar a evolução do projeto, desde a identificação das necessidades do sistema até a definição de sua estrutura relacional.
 
@@ -119,6 +121,7 @@ São utilizados recursos como:
 - `UNIQUE`: garantia de unicidade;
 - `CHECK`: validação de valores e regras de domínio;
 - `DEFAULT`: definição de valores padrão;
+- `CREATE UNIQUE INDEX ... WHERE`: índices únicos parciais para regras de unicidade condicionais (RB06 e RB20);
 - `ON DELETE` e `ON UPDATE`: controle do comportamento das chaves estrangeiras.
 
 ### 5.2. Inserção de dados – DML
@@ -133,16 +136,16 @@ O projeto contém dez consultas destinadas à exploração e à validação das 
 
 | Arquivo | Objetivo |
 |---|---|
-| `consulta1.sql` | Análise do faturamento por cliente e situação dos pagamentos |
-| `consulta2.sql` | Identificação de detetives com média superior à média geral |
-| `consulta3.sql` | Consulta de investigações com suspeitos registrados |
-| `consulta4.sql` | Identificação de clientes com pagamentos pendentes |
-| `consulta5.sql` | Análise da alocação de equipamentos, incluindo valores nulos |
-| `consulta6.sql` | Análise dos valores mínimos e máximos relacionados às missões |
-| `consulta7.sql` | Utilização de CTE para calcular o percentual de quitação financeira |
-| `consulta8.sql` | Consulta do histórico de atividades por usuário |
-| `consulta9.sql` | Demonstração de transação com utilização de SAVEPOINT |
-| `consulta10.sql` | Demonstração de transação com tratamento de erros e ROLLBACK |
+| `consulta1.sql` | Faturamento por cliente: total de contratos, soma e média (`COUNT`, `SUM`, `AVG`, `HAVING`, ordenação descendente) |
+| `consulta2.sql` | Detetives com número de investigações lideradas igual ou superior à média (subconsulta escalar no `HAVING`) |
+| `consulta3.sql` | Investigações ativas com suspeitos registrados (subconsulta com `EXISTS`) |
+| `consulta4.sql` | Clientes com pagamentos pendentes (`INNER JOIN` + `LEFT JOIN` com 3 tabelas, `COALESCE`, `HAVING`) |
+| `consulta5.sql` | Alocação atual dos equipamentos (`LEFT JOIN` com 4 tabelas, `IS NULL`, `COALESCE`) |
+| `consulta6.sql` | Duração mínima, máxima e média das missões por investigação com evidências (`MIN`, `MAX`, `AVG`, subconsulta com `IN`) |
+| `consulta7.sql` | Percentual de quitação financeira por contrato (CTE, ordenação ascendente) |
+| `consulta8.sql` | Ações registradas no histórico por usuário e por investigação (`GROUP BY` com duas colunas, `MAX`) |
+| `consulta9.sql` | Transação de confirmação de pagamento com `SAVEPOINT` e `COMMIT` |
+| `consulta10.sql` | Transação com `SAVEPOINT` e `ROLLBACK` para desfazer uma alteração |
 
 As consultas exploram diferentes recursos da linguagem SQL, incluindo agregações, subconsultas, junções, expressões condicionais, CTEs e controle transacional.
 
@@ -153,10 +156,11 @@ As consultas exploram diferentes recursos da linguagem SQL, incluindo agregaçõ
 Antes de executar o projeto, é necessário possuir:
 
 - Python 3.x instalado;
-- SQLite 3.x;
+- Biblioteca `pandas` (utilizada para exibir os resultados em forma de tabela): `pip install pandas`;
+- SQLite 3.x (opcional, apenas para a execução manual);
 - Um terminal ou ambiente de desenvolvimento compatível.
 
-Não é necessário instalar uma biblioteca externa para utilizar SQLite com Python, pois o módulo `sqlite3` já faz parte da biblioteca padrão da linguagem.
+O módulo `sqlite3` já faz parte da biblioteca padrão do Python; a única dependência externa é o `pandas`.
 
 ### 6.2. Execução automatizada com Python
 
@@ -176,7 +180,7 @@ O script é responsável por automatizar as etapas de execução do projeto, inc
 4. Execução sequencial das dez consultas SQL;
 5. Exibição dos resultados no terminal.
 
-**Observação:** a execução automatizada pode recriar o banco de dados. Portanto, eventuais alterações realizadas manualmente na base devem ser preservadas antes de uma nova execução.
+**Observação:** a execução automatizada recria o banco de dados a cada vez. A `consulta9.sql` altera dados (confirma um pagamento e grava uma linha no histórico); para restaurar o estado inicial, basta executar o script novamente. O arquivo `database/agencia_detetives.db` versionado no repositório contém o estado inicial (DDL + DML), antes da execução das consultas.
 
 ### 6.3. Execução manual utilizando SQLite
 

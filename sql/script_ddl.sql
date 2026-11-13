@@ -75,7 +75,8 @@ CREATE TABLE INVESTIGACAO (
     nivel_confidencialidade TEXT NOT NULL DEFAULT 'RESTRITO' CHECK (nivel_confidencialidade IN ('PUBLICO', 'RESTRITO', 'CONFIDENCIAL', 'SECRETO')),
     FOREIGN KEY (id_cliente) REFERENCES CLIENTE(id_cliente) ON DELETE RESTRICT ON UPDATE CASCADE,
     FOREIGN KEY (id_detetive_responsavel) REFERENCES DETETIVE(id_detetive) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT chk_datas_investigacao CHECK (data_encerramento IS NULL OR data_encerramento >= data_abertura)
+    CONSTRAINT chk_datas_investigacao CHECK (data_encerramento IS NULL OR data_encerramento >= data_abertura),
+    CONSTRAINT chk_encerramento_status CHECK (status <> 'ENCERRADA' OR data_encerramento IS NOT NULL)
 );
 
 CREATE TABLE ATRIBUICAO (
@@ -86,7 +87,9 @@ CREATE TABLE ATRIBUICAO (
     data_fim TEXT,
     eh_responsavel_principal INTEGER NOT NULL DEFAULT 0 CHECK (eh_responsavel_principal IN (0, 1)),
     FOREIGN KEY (id_investigacao) REFERENCES INVESTIGACAO(id_investigacao) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_detetive) REFERENCES DETETIVE(id_detetive) ON DELETE RESTRICT ON UPDATE CASCADE
+    FOREIGN KEY (id_detetive) REFERENCES DETETIVE(id_detetive) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT uq_atribuicao UNIQUE (id_investigacao, id_detetive, data_inicio),
+    CONSTRAINT chk_datas_atribuicao CHECK (data_fim IS NULL OR data_fim >= data_inicio)
 );
 
 CREATE TABLE MISSAO (
@@ -97,7 +100,8 @@ CREATE TABLE MISSAO (
     data_inicio TEXT NOT NULL,
     data_fim TEXT,
     status TEXT NOT NULL DEFAULT 'PLANEJADA' CHECK (status IN ('PLANEJADA', 'EM_ANDAMENTO', 'CONCLUIDA', 'CANCELADA')),
-    FOREIGN KEY (id_investigacao) REFERENCES INVESTIGACAO(id_investigacao) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (id_investigacao) REFERENCES INVESTIGACAO(id_investigacao) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT chk_datas_missao CHECK (data_fim IS NULL OR data_fim >= data_inicio)
 );
 
 CREATE TABLE MISSAO_DETETIVE (
@@ -117,7 +121,8 @@ CREATE TABLE UTILIZACAO_EQUIPAMENTO (
     data_fim TEXT,
     FOREIGN KEY (id_equipamento) REFERENCES EQUIPAMENTO(id_equipamento) ON DELETE RESTRICT ON UPDATE CASCADE,
     FOREIGN KEY (id_missao) REFERENCES MISSAO(id_missao) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_detetive) REFERENCES DETETIVE(id_detetive) ON DELETE RESTRICT ON UPDATE CASCADE
+    FOREIGN KEY (id_detetive) REFERENCES DETETIVE(id_detetive) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT chk_datas_utilizacao CHECK (data_fim IS NULL OR data_fim >= data_inicio)
 );
 
 CREATE TABLE PESSOA (
@@ -135,7 +140,8 @@ CREATE TABLE ENVOLVIMENTO (
     papel TEXT NOT NULL CHECK (papel IN ('SUSPEITO', 'VITIMA', 'TESTEMUNHA', 'PESSOA_PROCURADA', 'PESSOA_DE_INTERESSE')),
     data_registro TEXT NOT NULL DEFAULT (DATE('now')),
     FOREIGN KEY (id_investigacao) REFERENCES INVESTIGACAO(id_investigacao) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_pessoa) REFERENCES PESSOA(id_pessoa) ON DELETE RESTRICT ON UPDATE CASCADE
+    FOREIGN KEY (id_pessoa) REFERENCES PESSOA(id_pessoa) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT uq_envolvimento UNIQUE (id_investigacao, id_pessoa, papel)
 );
 
 CREATE TABLE ENTREVISTA (
@@ -237,3 +243,13 @@ CREATE TABLE HISTORICO (
     usuario_sistema TEXT NOT NULL,
     FOREIGN KEY (id_investigacao) REFERENCES INVESTIGACAO(id_investigacao) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+-- RB20: uma investigação pode possuir no máximo um relatório final.
+CREATE UNIQUE INDEX uq_relatorio_final
+    ON RELATORIO (id_investigacao)
+    WHERE tipo_relatorio = 'FINAL';
+
+-- RB06: uma investigação possui um único detetive responsável principal vigente.
+CREATE UNIQUE INDEX uq_atribuicao_principal
+    ON ATRIBUICAO (id_investigacao)
+    WHERE eh_responsavel_principal = 1 AND data_fim IS NULL;

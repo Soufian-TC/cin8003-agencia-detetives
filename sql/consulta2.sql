@@ -1,5 +1,5 @@
---- Consulta 2: Avaliação de Detetives por Valor de Contrato
---- Objetivo: Identifica os detetives cujo valor médio dos contratos em que estão envolvidos é superior à média geral da agência.
+--- Consulta 2: Detetives com Carga de Liderança Acima da Média
+--- Objetivo: Identifica os detetives responsáveis cujo número de investigações lideradas é igual ou superior à média de investigações por detetive responsável na agência (subconsulta escalar).
 SELECT 
     d.nome AS detetive,
     COUNT(i.id_investigacao) AS investigacoes_lideradas

@@ -44,7 +44,7 @@ O projeto consiste no desenvolvimento de um banco de dados para gerenciar de for
 * **RB10:** Uma missão possui status e deve registrar suas datas quando aplicável.
 * **RB11:** Uma missão pode ser realizada por um ou mais detetives.
 * **RB12:** Uma pessoa pode estar relacionada a várias investigações, e uma investigação pode envolver várias pessoas.
-* **RB13:** O papel de uma pessoa deve ser registrado no contexto da investigação (`SUSPEITO`, `VÍTIMA`, `TESTEMUNHA`, `PESSOA_PROCURADA` ou `PESSOA_DE_INTERESSE`).
+* **RB13:** O papel de uma pessoa deve ser registrado no contexto da investigação (`SUSPEITO`, `VITIMA`, `TESTEMUNHA`, `PESSOA_PROCURADA` ou `PESSOA_DE_INTERESSE`).
 * **RB14:** Um detetive pode realizar várias entrevistas e uma pessoa pode participar de várias entrevistas.
 * **RB15:** Cada entrevista deve estar associada a uma investigação, a uma data e a pelo menos um detetive.
 * **RB16:** Uma investigação pode gerar várias evidências.
@@ -52,9 +52,9 @@ O projeto consiste no desenvolvimento de um banco de dados para gerenciar de for
 * **RB18:** Uma evidência pode estar relacionada a uma ou várias pessoas e a um ou vários locais.
 * **RB19:** Uma investigação pode possuir vários relatórios.
 * **RB20:** Uma investigação pode possuir no máximo um relatório final.
-* **RB21:** Um relatório deve registrar a investigação, o autor ou autores, a data e o tipo do relatório.
+* **RB21:** Um relatório deve registrar a investigação, o detetive autor, a data e o tipo do relatório (`INTERMEDIARIO` ou `FINAL`).
 * **RB22:** Uma investigação deve possuir um contrato antes do início das atividades faturáveis.
-* **RB23:** Um contrato pertence a um único cliente e pode estar associado a uma investigação.
+* **RB23:** Um contrato pertence a um único cliente e está associado a uma única investigação; uma investigação possui no máximo um contrato.
 * **RB24:** Um contrato deve possuir um valor total superior a zero.
 * **RB25:** Um contrato pode gerar vários pagamentos.
 * **RB26:** Cada pagamento pertence a um único contrato e possui data, valor e status.

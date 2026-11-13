@@ -8,4 +8,4 @@ FROM CLIENTE c
 INNER JOIN CONTRATO ct ON c.id_cliente = ct.id_cliente
 LEFT JOIN PAGAMENTO p ON ct.id_contrato = p.id_contrato AND p.status = 'PENDENTE'
 GROUP BY c.id_cliente, c.nome, ct.numero_contrato
-HAVING total_pendente > 0;
+HAVING COALESCE(SUM(p.valor), 0.00) > 0;
