@@ -1,5 +1,5 @@
 --- Consulta 8: Auditoria de Ações no Sistema
---- Objetivo: Conta o número de ações realizadas no sistema, agrupadas por usuário e por tipo de ação.
+--- Objetivo: Conta o número de ações registradas no histórico, agrupadas por usuário do sistema e por investigação, indicando a data da última ação.
 SELECT 
     h.usuario_sistema,
     i.titulo AS investigacao,

@@ -29,11 +29,11 @@ INSERT INTO EQUIPAMENTO (nome, numero_serie, estado_conservacao) VALUES
 ('Escuta Direcional de Longo Alcance', 'SN-ESC-003', 'DEFEITUOSO');
 
 -- INVESTIGAÇÕES
-INSERT INTO INVESTIGACAO (id_cliente, id_detetive_responsavel, titulo, descricao, data_abertura, status, nivel_confidencialidade) VALUES
-(1, 1, 'Vazamento de Segredo Industrial', 'Suspeita de espionagem de concorrente', '2026-01-10', 'EM_ANDAMENTO', 'CONFIDENCIAL'),
-(2, 2, 'Investigação Conjugal', 'Verificação de conduta e rotina', '2026-01-15', 'EM_ANDAMENTO', 'RESTRITO'),
-(3, 1, 'Auditoria Interna Antifraude', 'Verificação de desvios em contas', '2026-02-01', 'ABERTA', 'SECRETO'),
-(4, 3, 'Localização de Devedor', 'Busca por bens e paradeiro', '2026-02-05', 'ENCERRADA', 'PUBLICO');
+INSERT INTO INVESTIGACAO (id_cliente, id_detetive_responsavel, titulo, descricao, data_abertura, data_encerramento, status, nivel_confidencialidade) VALUES
+(1, 1, 'Vazamento de Segredo Industrial', 'Suspeita de espionagem de concorrente', '2026-01-10', NULL, 'EM_ANDAMENTO', 'CONFIDENCIAL'),
+(2, 2, 'Investigação Conjugal', 'Verificação de conduta e rotina', '2026-01-15', NULL, 'EM_ANDAMENTO', 'RESTRITO'),
+(3, 1, 'Auditoria Interna Antifraude', 'Verificação de desvios em contas', '2026-02-01', NULL, 'ABERTA', 'SECRETO'),
+(4, 3, 'Localização de Devedor', 'Busca por bens e paradeiro', '2026-02-05', '2026-02-10', 'ENCERRADA', 'PUBLICO');
 
 -- ATRIBUIÇÃO
 INSERT INTO ATRIBUICAO (id_investigacao, id_detetive, data_inicio, eh_responsavel_principal) VALUES
@@ -47,16 +47,18 @@ INSERT INTO ATRIBUICAO (id_investigacao, id_detetive, data_inicio, eh_responsave
 INSERT INTO MISSAO (id_investigacao, titulo, descricao, data_inicio, data_fim, status) VALUES
 (1, 'Campana Sede Concorrente', 'Monitorar entrada e saída de executivos', '2026-01-11', '2026-01-14', 'CONCLUIDA'),
 (1, 'Varredura Eletrônica', 'Análise de redes e dispositivos da sala da diretoria', '2026-01-15', NULL, 'EM_ANDAMENTO'),
-(2, 'Vigilância Noturna', 'Seguir veículo do alvo', '2026-01-16', '2026-01-17', 'CONCLUIDA');
+(2, 'Vigilância Noturna', 'Seguir veículo do alvo', '2026-01-16', '2026-01-17', 'CONCLUIDA'),
+(3, 'Levantamento de Extratos Bancários', 'Coleta e conferência dos extratos das contas auditadas', '2026-02-10', NULL, 'PLANEJADA');
 
 -- MISSAO_DETETIVE
 INSERT INTO MISSAO_DETETIVE (id_missao, id_detetive) VALUES
-(1, 1), (1, 2), (2, 1), (3, 2);
+(1, 1), (1, 2), (2, 1), (3, 2), (4, 1);
 
 -- UTILIZACAO_EQUIPAMENTO
 INSERT INTO UTILIZACAO_EQUIPAMENTO (id_equipamento, id_missao, id_detetive, data_inicio, data_fim) VALUES
 (1, 1, 1, '2026-01-11', '2026-01-14'),
-(2, 3, 2, '2026-01-16', '2026-01-17');
+(2, 3, 2, '2026-01-16', '2026-01-17'),
+(1, 2, 1, '2026-01-15', NULL);
 
 -- PESSOA
 INSERT INTO PESSOA (nome, cpf, descricao_fisica, observacoes) VALUES
@@ -92,11 +94,12 @@ INSERT INTO EVIDENCIA_PESSOA (id_evidencia, id_pessoa) VALUES
 -- LOCAL
 INSERT INTO LOCAL (id_missao, id_entrevista, endereco_completo, cidade, estado, coordenadas_gps) VALUES
 (1, NULL, 'Av. Paulista, 1000 - Bela Vista', 'São Paulo', 'SP', '-23.561,-46.655'),
-(NULL, 1, 'Rua Bocaiúva, 212 - Centro', 'Florianópolis', 'SC', '-27.585,-48.552');
+(NULL, 1, 'Rua Bocaiúva, 212 - Centro', 'Florianópolis', 'SC', '-27.585,-48.552'),
+(3, NULL, 'Rua Lauro Linhares, 589 - Trindade', 'Florianópolis', 'SC', NULL);
 
 -- EVIDENCIA_LOCAL
 INSERT INTO EVIDENCIA_LOCAL (id_evidencia, id_local) VALUES
-(2, 1);
+(2, 1), (3, 3);
 
 -- RELATORIO
 INSERT INTO RELATORIO (id_investigacao, id_autor, titulo, conteudo, data_emissao, tipo_relatorio) VALUES
@@ -107,7 +110,8 @@ INSERT INTO RELATORIO (id_investigacao, id_autor, titulo, conteudo, data_emissao
 INSERT INTO CONTRATO (id_cliente, id_investigacao, numero_contrato, data_assinatura, valor_total, termos) VALUES
 (1, 1, 'CT-2026-001', '2026-01-10', 15000.00, 'Pagamento 50% ato, 50% na entrega do relatório final.'),
 (2, 2, 'CT-2026-002', '2026-01-15', 5000.00, 'Pagamento integral em duas parcelas.'),
-(3, 3, 'CT-2026-003', '2026-02-01', 25000.00, 'Contrato de auditoria especial.');
+(3, 3, 'CT-2026-003', '2026-02-01', 25000.00, 'Contrato de auditoria especial.'),
+(4, 4, 'CT-2026-004', '2026-02-05', 3500.00, 'Pagamento único na entrega do relatório final.');
 
 -- PAGAMENTO
 INSERT INTO PAGAMENTO (id_contrato, data_pagamento, valor, status) VALUES
@@ -115,10 +119,12 @@ INSERT INTO PAGAMENTO (id_contrato, data_pagamento, valor, status) VALUES
 (1, '2026-02-01', 7500.00, 'PENDENTE'),
 (2, '2026-01-15', 2500.00, 'CONFIRMADO'),
 (2, '2026-02-15', 2500.00, 'PENDENTE'),
-(3, '2026-02-01', 10000.00, 'CONFIRMADO');
+(3, '2026-02-01', 10000.00, 'CONFIRMADO'),
+(4, '2026-02-10', 3500.00, 'CONFIRMADO');
 
 -- HISTORICO
 INSERT INTO HISTORICO (id_investigacao, data_hora, acao_realizada, usuario_sistema) VALUES
 (1, '2026-01-10 09:00:00', 'Abertura de Investigação e emissão de contrato CT-2026-001', 'admin_sys'),
 (1, '2026-01-12 11:30:00', 'Inclusão de Evidência Digital ID 1', 'detetive_carlos'),
-(2, '2026-01-15 14:20:00', 'Abertura de caso e alocação da detetive Mariana', 'admin_sys');
+(2, '2026-01-15 14:20:00', 'Abertura de caso e alocação da detetive Mariana', 'admin_sys'),
+(4, '2026-02-10 17:00:00', 'Encerramento da investigação e emissão do relatório final', 'detetive_fernando');
