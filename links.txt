@@ -1,0 +1,4 @@
+https://sqliteonline.com/ - Ambiente web para execução e validação dos scripts SQLite DDL e DML.
+https://dbdiagram.io/ - Ferramenta utilizada para apoio visual ao desenho do Esquema Relacional.
+http://www.planalto.gov.br/ccivil_03/_ato2015-2018/2017/lei/l13432.htm - Lei nº 13.432/2017 (Regulamenta o exercício da profissão de detetive particular no Brasil).
+http://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm - Lei nº 13.709/2018 (Lei Geral de Proteção de Dados Pessoais - LGPD).
